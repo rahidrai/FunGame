@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic Quest - The Adventure Begins</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .game-container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-header {
+            margin-bottom: 30px;
+        }
+        
+        .game-title {
+            font-size: 3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .game-subtitle {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        .character-selection {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+        
+        .character {
+            width: 150px;
+            height: 200px;
+            background: rgba(50, 50, 50, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .character:hover {
+            transform: translateY(-10px);
+            border-color: #ff8a00;
+            box-shadow: 0 5px 15px rgba(255, 138, 0, 0.3);
+        }
+        
+        .character-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+        
+        .character-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .character-desc {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        .selected {
+            border-color: #ff8a00;
+            background: rgba(255, 138, 0, 0.1);
+        }
+        
+        .game-controls {
+            margin: 30px 0;
+        }
+        
+        .start-button {
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(218, 27, 96, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(218, 27, 96, 0.6);
+        }
+        
+        .game-features {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        
+        .feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #ff8a00;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        /* Popup Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 10px;
+        }
+        
+        .modal-title {
+            color: #333;
+            margin: 15px 0;
+            font-size: 1.5rem;
+        }
+        
+        .modal-button {
+            background: #ff8a00;
+            border: none;
+            padding: 10px 25px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">Epic Quest</h1>
+            <p class="game-subtitle">Embark on an unforgettable adventure</p>
+        </div>
+        
+        <div class="character-selection">
+            <div class="character selected" data-character="warrior">
+                <div class="character-icon">⚔️</div>
+                <div class="character-name">Warrior</div>
+                <div class="character-desc">Strong and resilient, perfect for beginners</div>
+            </div>
+            <div class="character" data-character="mage">
+                <div class="character-icon">🔮</div>
+                <div class="character-name">Mage</div>
+                <div class="character-desc">Master of arcane arts with powerful spells</div>
+            </div>
+            <div class="character" data-character="rogue">
+                <div class="character-icon">🗡️</div>
+                <div class="character-name">Rogue</div>
+                <div class="character-desc">Stealthy and deadly with precision strikes</div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button class="start-button" id="startButton">Enter The Game</button>
+        </div>
+        
+        <div class="game-features">
+            <div class="feature">
+                <div class="feature-icon">🎮</div>
+                <div class="feature-text">Immersive Gameplay</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌍</div>
+                <div class="feature-text">Open World</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚔️</div>
+                <div class="feature-text">Epic Battles</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-text">Achievements</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popup Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <button class="close-button" id="closeButton">&times;</button>
+            <img src="drake-diddy.gif" alt="Prank Image" class="modal-image">
+            <h2 class="modal-title">You've been invited to the Diddy Party</h2>
+            <p>OKAY</p>
+            <button class="modal-button" id="modalButton">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size
+                const size = Math.random() * 10 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation delay
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Character selection
+        const characters = document.querySelectorAll('.character');
+        characters.forEach(character => {
+            character.addEventListener('click', () => {
+                characters.forEach(c => c.classList.remove('selected'));
+                character.classList.add('selected');
+            });
+        });
+        
+        // Modal functionality
+        const startButton = document.getElementById('startButton');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeButton = document.getElementById('closeButton');
+        const modalButton = document.getElementById('modalButton');
+        
+        startButton.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+        });
+        
+        closeButton.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+        
+        modalButton.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+        
+        // Close modal when clicking outside the content
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+        
+        // Initialize particles
+        createParticles();
+    </script>
+</body>
+</html>
